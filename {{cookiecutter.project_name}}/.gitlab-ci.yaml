@@ -1,0 +1,15 @@
+stages:
+  - build
+
+build-and-push:
+  stage: build
+  image: docker:24.0.7
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - IMAGE=docker.io/$DOCKERHUB_USERNAME/{{cookiecutter.project_name}}
+    - docker build -t $IMAGE:latest .
+    - docker push $IMAGE:latest
